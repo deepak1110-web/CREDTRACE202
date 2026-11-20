@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harbor & Finch Freight - Company Portal</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <a href="/" class="brand">
+      <span class="brand-badge">MODULE A.1</span>
+      <span class="brand-title">HARBOR & FINCH FREIGHT</span>
+      <span class="brand-case">INTRANET PORTAL</span>
+    </a>
+
+    <div class="room-bar">
+      <span class="room-label">ROOM:</span>
+      <input type="text" class="room-input" placeholder="Room ID..." value="CR-26-047-DEMO">
+      <div class="ws-status-pill ws-connected">
+        <span class="pulse-dot"></span> <span>SYNCED</span>
+      </div>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/" class="nav-item">HUB</a>
+      <a href="/portal" class="nav-item active">COMPANY PORTAL</a>
+      <a href="/simulator" class="nav-item attacker-link">ATTACKER SIMULATOR</a>
+      <a href="/investigator" class="nav-item">INVESTIGATOR SOC</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    
+    <!-- Auth Section (When Not Logged In) -->
+    <div id="auth-section" class="card" style="max-width: 540px; margin: 40px auto; display: none;">
+      <div class="card-header">
+        <span class="card-title">Employee Portal Authentication</span>
+        <span class="badge badge-medium">SECURE SSO</span>
+      </div>
+      <form id="login-form">
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 11px; text-transform: uppercase; color: var(--text-dim); display: block; margin-bottom: 6px;">Username</label>
+          <input type="text" id="username-input" class="mono" style="width:100%; padding:10px; background:rgba(0,0,0,0.4); border:1px solid var(--border-subtle); color:#fff; border-radius:var(--radius-sm);" value="sarah.chen" required>
+        </div>
+        <div style="margin-bottom: 18px;">
+          <label style="font-size: 11px; text-transform: uppercase; color: var(--text-dim); display: block; margin-bottom: 6px;">Password</label>
+          <input type="password" id="password-input" class="mono" style="width:100%; padding:10px; background:rgba(0,0,0,0.4); border:1px solid var(--border-subtle); color:#fff; border-radius:var(--radius-sm);" value="Password123!" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-bottom:16px;">Sign In to Corporate Intranet</button>
+      </form>
+
+      <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px;">
+        <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 8px;">Demo Employee Quick Login:</div>
+        <div id="demo-users-pills" style="display:flex; flex-direction:column; gap:6px;"></div>
+      </div>
+    </div>
+
+    <!-- Main Portal Content (When Logged In) -->
+    <div id="portal-main-section">
+      
+      <!-- User Info & Operations Bar -->
+      <div class="card" style="margin-bottom: 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div>
+          <div style="font-size:11px; color:var(--text-dim); text-transform:uppercase;">Signed In As</div>
+          <div id="user-greeting" style="font-size:16px; font-weight:700; color:#fff;">Sarah Chen [Operations Lead]</div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <a href="/simulator" class="btn btn-danger btn-sm">Switch to Attacker Console &rarr;</a>
+          <button id="logout-btn" class="btn btn-outline btn-sm">Sign Out</button>
+        </div>
+      </div>
+
+      <!-- KPI Metrics -->
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-label">Active Cargo Vessels</div>
+          <div class="stat-val" style="color:var(--accent-cyan);">14</div>
+          <div class="stat-sub">Vessels in international transit</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Containers Monitored</div>
+          <div class="stat-val">4,820 TEU</div>
+          <div class="stat-sub">Real-time AIS GPS tracking</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Vendor EDI Integrations</div>
+          <div class="stat-val" style="color:var(--accent-green);">6 Active</div>
+          <div class="stat-sub">Third-party clearing gateways</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Primary API Credential</div>
+          <div class="stat-val mono" style="font-size:20px; color:var(--accent-cyan);">bvk-7f3a</div>
+          <div class="stat-sub" id="credential-status-badge">ACTIVE (VALID)</div>
+        </div>
+      </div>
+
+      <!-- Core Demonstration: Credential Exposure in Support Ticket TKT-48213 -->
+      <div class="card" style="margin-bottom: 24px; border: 1px solid var(--accent-cyan); background: rgba(6, 182, 212, 0.04);">
+        <div class="card-header" style="border-bottom-color: rgba(6, 182, 212, 0.2);">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="badge badge-medium">CASE CR-26-047 FORENSIC STARTING POINT</span>
+            <span style="font-weight:700; color:#fff; font-size:14px;">Support Ticket TKT-48213: Third-Party Credential Issuance</span>
+          </div>
+          <span class="badge badge-low">CREDENTIAL EXPOSURE RECORD</span>
+        </div>
+        <div style="font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">
+          During third-party freight vendor integration, an operations ticket generated test API credentials. 
+          The credential identifier is <code class="mono" style="color:var(--accent-cyan); font-weight:700;">bvk-7f3a</code>, 
+          which authenticates with a separate random synthetic secret. Copy this secret below to test in the Adversary Simulator on Laptop 2!
+        </div>
+
+        <div style="background:rgba(0,0,0,0.5); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:16px; margin-bottom:14px;">
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:12px; margin-bottom:14px; font-size:12px;">
+            <div>
+              <span style="color:var(--text-dim);">Credential Identifier:</span><br/>
+              <span class="mono" style="color:#fff; font-weight:700; font-size:14px;">bvk-7f3a</span>
+            </div>
+            <div>
+              <span style="color:var(--text-dim);">Associated Support Ticket:</span><br/>
+              <span class="mono" style="color:var(--accent-cyan); font-weight:700;">TKT-48213</span>
+            </div>
+            <div>
+              <span style="color:var(--text-dim);">Credential Status:</span><br/>
+              <span id="cred-status-pill" class="badge badge-low">ACTIVE (VALID)</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <label style="font-size:11px; text-transform:uppercase; color:var(--text-dim); display:block; margin-bottom:6px;">
+              Synthetic Secret (Separately Generated Random Test Token)
+            </label>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="synthetic-secret-display" class="mono" style="flex:1; padding:10px 14px; background:#050811; border:1px solid var(--border-active); color:var(--accent-green); border-radius:var(--radius-sm); font-size:13px;" readonly value="sec_live_9b4e72c81a6f0012e8b2841d9c025d31">
+              <button id="btn-copy-secret" class="btn btn-primary">
+                <span>COPY SECRET</span>
+              </button>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <button id="btn-generate-fresh-token" class="btn btn-outline btn-sm">
+              <span>Re-Generate Fresh Synthetic Token</span>
+            </button>
+            <a href="/simulator" class="btn btn-danger btn-sm">
+              <span>Proceed to Attacker Simulator on Laptop 2 &rarr;</span>
+            </a>
+          </div>
+        </div>
+
+        <div style="font-size:11px; color:var(--text-dim);">
+          <b>Forensic Note:</b> The credential identifier <code>bvk-7f3a</code> is an indexing handle. The backend never stores the raw secret; only a SHA-256 hash is recorded in the credential database.
+        </div>
+      </div>
+
+      <!-- Support Tickets Section -->
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-header">
+          <span class="card-title">Corporate Support Tickets & Integration Log</span>
+          <span class="badge badge-medium">PORTAL LOG</span>
+        </div>
+        <div id="tickets-list"></div>
+      </div>
+
+      <!-- Active Shipments Table -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Live Freight Movements & AIS Manifest Registry</span>
+          <span class="badge badge-low">SYNTHETIC LOGISTICS DATA</span>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Shipment ID</th>
+                <th>Origin Port</th>
+                <th>Destination</th>
+                <th>Status</th>
+                <th>Cargo Manifest</th>
+                <th>Metric Tons</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono" style="color:var(--accent-cyan); font-weight:700;">SHP-7819-SEA</td>
+                <td>Rotterdam Terminal 4</td>
+                <td>Port of Singapore Hub 2</td>
+                <td><span class="badge badge-low">In Transit (Vessel Ocean Wave)</span></td>
+                <td>Automotive Electronic Components</td>
+                <td class="mono">1,420.5 MT</td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--accent-cyan); font-weight:700;">SHP-9021-AIR</td>
+                <td>Frankfurt Cargo City</td>
+                <td>Mumbai Air Freight Complex</td>
+                <td><span class="badge badge-medium">Customs Cleared</span></td>
+                <td>Pharmaceutical Temperature Controlled</td>
+                <td class="mono">84.2 MT</td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--accent-cyan); font-weight:700;">SHP-3312-RAIL</td>
+                <td>Chicago Intermodal Yard</td>
+                <td>Long Beach Port Terminal</td>
+                <td><span class="badge badge-low">Manifest Verified</span></td>
+                <td>Industrial Machinery Hardware</td>
+                <td class="mono">960.0 MT</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/portal.js"></script>
+</body>
+</html>

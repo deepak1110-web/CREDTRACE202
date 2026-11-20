@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CREDTRACE - Investigator SOC & Forensics Command Centre</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js for Visual Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-nav" style="border-bottom-color: rgba(6, 182, 212, 0.3);">
+    <div style="display:flex; align-items:center; gap:16px;">
+      <a href="/" class="brand">
+        <span class="brand-badge">SOC COMMAND</span>
+        <span class="brand-title">CREDTRACE-LIVE</span>
+      </a>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span class="badge badge-critical" style="animation: pulse 2s infinite;">LIVE INCIDENT CR-26-047</span>
+        <span class="mono" style="font-size:12px; color:var(--text-dim);">HARBOR & FINCH FREIGHT</span>
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div class="room-bar">
+        <span class="room-label">ROOM:</span>
+        <input type="text" class="room-input" placeholder="Room ID..." value="CR-26-047-DEMO">
+        <div class="ws-status-pill ws-connected">
+          <span class="pulse-dot"></span> <span>SYNCED</span>
+        </div>
+      </div>
+
+      <button id="btn-header-revoke" class="btn btn-danger btn-sm" title="Immediate Server-Side Revocation">
+        <span>&times; REVOKE BVK-7F3A</span>
+      </button>
+
+      <button class="btn btn-outline btn-sm" onclick="CREDTRACE.copyShareLink('simulator')">
+        <span>Share Laptop 2 Link</span>
+      </button>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/" class="nav-item">HUB</a>
+      <a href="/portal" class="nav-item">PORTAL</a>
+      <a href="/simulator" class="nav-item attacker-link">ATTACKER</a>
+      <a href="/investigator" class="nav-item active">INVESTIGATOR SOC</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    
+    <!-- Top Metric Overview Grid -->
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="stat-label">Total Security Events</div>
+        <div id="kpi-events-count" class="stat-val" style="color:var(--accent-cyan);">0</div>
+        <div class="stat-sub">Persisted to hash chain</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Allowed Requests</div>
+        <div id="kpi-allowed-count" class="stat-val" style="color:var(--accent-green);">0</div>
+        <div class="stat-sub">Policy authorized</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Denied / Intercepted</div>
+        <div id="kpi-denied-count" class="stat-val" style="color:var(--accent-red);">0</div>
+        <div class="stat-sub">Policy blocks & post-revocation</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Threat Alerts Triggered</div>
+        <div id="kpi-alerts-count" class="stat-val" style="color:var(--accent-amber);">0</div>
+        <div class="stat-sub">Detection rules active</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Calculated Risk Score</div>
+        <div id="kpi-risk-score" class="stat-val mono" style="font-size:22px; color:var(--accent-cyan);">15 / 100</div>
+        <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:999px; margin-top:8px; overflow:hidden;">
+          <div id="kpi-risk-bar" style="width:15%; height:100%; background:var(--accent-green); transition:all 0.3s ease;"></div>
+        </div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Primary Credential Status</div>
+        <div style="margin-top:6px;">
+          <span id="kpi-credential-status" class="badge badge-low" style="font-size:12px;">ACTIVE (MONITORING)</span>
+        </div>
+        <div class="stat-sub mono" style="margin-top:6px;">ID: bvk-7f3a</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs & Content Layout -->
+    <div style="display:grid; grid-template-columns: 240px 1fr; gap:20px;">
+      
+      <!-- Left Sidebar Tab Navigation -->
+      <aside style="display:flex; flex-direction:column; gap:6px;">
+        <button class="btn btn-outline nav-tab-btn active" data-tab="overview" style="justify-content:flex-start;">
+          <span>1. Overview & Live Feed</span>
+        </button>
+        <button class="btn btn-outline nav-tab-btn" data-tab="credentials" style="justify-content:flex-start;">
+          <span>2. Credential Intelligence</span>
+        </button>
+        <button class="btn btn-outline nav-tab-btn" data-tab="alerts" style="justify-content:flex-start;">
+          <span>3. Threat Alerts</span>
+        </button>
+        <button class="btn btn-outline nav-tab-btn" data-tab="correlation" style="justify-content:flex-start;">
+          <span>4. Correlation Engine</span>
+        </button>
+        <button class="btn btn-outline nav-tab-btn" data-tab="containment" style="justify-content:flex-start; color:#fca5a5; border-color:rgba(239,68,68,0.3);">
+          <span>5. Containment & Revocation</span>
+        </button>
+        <button class="btn btn-outline nav-tab-btn" data-tab="audit" style="justify-content:flex-start; color:#6ee7b7; border-color:rgba(16,185,129,0.3);">
+          <span>6. Cryptographic Forensics</span>
+        </button>
+        <button class="btn btn-outline nav-tab-btn" data-tab="reports" style="justify-content:flex-start; color:var(--accent-cyan);">
+          <span>7. Forensic Reports Export</span>
+        </button>
+        <button class="btn btn-outline nav-tab-btn" data-tab="limitations" style="justify-content:flex-start; color:var(--text-dim);">
+          <span>8. Evidence Limitations</span>
+        </button>
+
+        <div style="margin-top:20px; padding:14px; background:rgba(0,0,0,0.3); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); font-size:11px; color:var(--text-dim);">
+          <div style="font-weight:700; color:#fff; margin-bottom:4px;">Demo Reset Control</div>
+          <p style="margin-bottom:8px;">Reset room state for a fresh demonstration run.</p>
+          <button id="btn-reset-simulation" class="btn btn-outline btn-sm" style="width:100%;">Reset Room State</button>
+        </div>
+      </aside>
+
+      <!-- Right Content Panes -->
+      <div style="min-height: 600px;">
+        
+        <!-- PANE 1: Overview & Live Telemetry -->
+        <div id="pane-overview" class="tab-pane active">
+          
+          <!-- Visual Charts Row -->
+          <div style="display:grid; grid-template-columns: 2fr 1fr; gap:16px; margin-bottom:20px;">
+            <div class="card" style="height:220px;">
+              <div class="card-header" style="margin-bottom:8px; padding-bottom:6px;">
+                <span class="card-title">Event Velocity Over Time</span>
+                <span class="badge badge-low">TELEMETRY</span>
+              </div>
+              <div style="height:150px; position:relative;">
+                <canvas id="chart-timeline"></canvas>
+              </div>
+            </div>
+
+            <div class="card" style="height:220px;">
+              <div class="card-header" style="margin-bottom:8px; padding-bottom:6px;">
+                <span class="card-title">Allowed vs Denied</span>
+                <span class="badge badge-medium">ENFORCEMENT</span>
+              </div>
+              <div style="height:150px; position:relative;">
+                <canvas id="chart-ratio"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Event Feed Table -->
+          <div class="card">
+            <div class="card-header">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="card-title">Live Security Events Feed</span>
+                <span class="badge badge-low">CRYPTOGRAPHIC LOG</span>
+              </div>
+              <div style="font-size:11px; color:var(--text-dim);" class="mono">
+                Source of Truth: Backend Database Ledger
+              </div>
+            </div>
+
+            <div class="table-wrap" style="max-height: 420px; overflow-y: auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Event ID</th>
+                    <th>Time (UTC)</th>
+                    <th>Action & Target</th>
+                    <th>Decision</th>
+                    <th>Device Origin</th>
+                    <th>SHA-256 Hash</th>
+                  </tr>
+                </thead>
+                <tbody id="events-feed-body">
+                  <tr>
+                    <td colspan="6" style="text-align:center; color:var(--text-dim); padding:24px;">
+                      Connecting to live room events stream...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE 2: Credential Intelligence -->
+        <div id="pane-credentials" class="tab-pane">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Credential Intelligence Record: bvk-7f3a</span>
+              <span id="cred-status-val" class="badge badge-low">ACTIVE</span>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:18px; margin-bottom:20px; font-size:13px;">
+              <div style="background:rgba(0,0,0,0.3); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="color:var(--text-dim); font-size:11px; text-transform:uppercase;">Credential Identifier</div>
+                <div id="cred-id-val" class="mono" style="font-size:16px; font-weight:700; color:#fff; margin-top:4px;">bvk-7f3a</div>
+              </div>
+              <div style="background:rgba(0,0,0,0.3); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="color:var(--text-dim); font-size:11px; text-transform:uppercase;">Associated Case</div>
+                <div id="cred-case-val" class="mono" style="font-size:16px; font-weight:700; color:var(--accent-cyan); margin-top:4px;">CR-26-047</div>
+              </div>
+              <div style="background:rgba(0,0,0,0.3); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="color:var(--text-dim); font-size:11px; text-transform:uppercase;">Origin Support Ticket</div>
+                <div id="cred-ticket-val" class="mono" style="font-size:16px; font-weight:700; color:var(--accent-amber); margin-top:4px;">TKT-48213</div>
+              </div>
+              <div style="background:rgba(0,0,0,0.3); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="color:var(--text-dim); font-size:11px; text-transform:uppercase;">Registration Timestamp</div>
+                <div id="cred-created-val" class="mono" style="font-size:13px; color:#cbd5e1; margin-top:4px;">-</div>
+              </div>
+            </div>
+
+            <div style="margin-bottom:18px;">
+              <div style="color:var(--text-dim); font-size:11px; text-transform:uppercase; margin-bottom:6px;">
+                Securely Stored SHA-256 Secret Hash (Raw Secret Never Logged or Persisted)
+              </div>
+              <div id="cred-hash-val" class="mono" style="padding:10px 14px; background:#050811; border:1px solid var(--border-subtle); color:var(--accent-cyan); border-radius:var(--radius-sm); font-size:12px; word-break:break-all;">-</div>
+            </div>
+
+            <!-- Revocation Details (Shown when revoked) -->
+            <div id="cred-revocation-details" style="display:none; background:rgba(30,10,15,0.6); border:1px solid var(--border-red); border-radius:var(--radius-sm); padding:14px;">
+              <div style="font-weight:700; color:#f87171; font-size:13px; margin-bottom:6px;">FORMAL CONTAINMENT RECORD</div>
+              <div style="font-size:12px; color:#fca5a5;">Revoked At: <b id="cred-revoked-at-val" class="mono"></b></div>
+              <div style="font-size:12px; color:#fca5a5;">Reason: <span id="cred-revoked-reason-val"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE 3: Threat Alerts -->
+        <div id="pane-alerts" class="tab-pane">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Rule-Based Threat Detection Alerts</span>
+              <span class="badge badge-critical">REAL-TIME ENGINE</span>
+            </div>
+            <div id="alerts-list-container"></div>
+          </div>
+        </div>
+
+        <!-- PANE 4: Correlation Engine -->
+        <div id="pane-correlation" class="tab-pane">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Multi-Source Correlation Assessment</span>
+              <span class="badge badge-medium">EXPLAINABLE FORENSICS</span>
+            </div>
+            <div style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
+              Correlates telemetry across credential handles, sessions, registered device labels, timestamps, and network observations. 
+              Assigns rigorous confidence ratings without fabricating attribution.
+            </div>
+            <div id="correlation-matrix-container"></div>
+          </div>
+        </div>
+
+        <!-- PANE 5: Containment & Revocation -->
+        <div id="pane-containment" class="tab-pane">
+          <div class="card card-attacker">
+            <div class="card-header" style="border-bottom-color:rgba(239,68,68,0.2);">
+              <span class="card-title" style="color:#fca5a5;">Investigator Access Control & Containment Action</span>
+              <span class="badge badge-critical">CONTAINMENT</span>
+            </div>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:18px; line-height:1.6;">
+              Executing revocation immediately changes credential status in the persistent backend database and records 
+              an immutable audit event. Once revoked, any subsequent simulated requests from Laptop 2 are blocked with HTTP 403.
+            </p>
+
+            <div style="margin-bottom:14px;">
+              <label style="font-size:11px; text-transform:uppercase; color:var(--text-dim); display:block; margin-bottom:6px;">Target Credential Identifier</label>
+              <input type="text" class="mono" style="width:100%; padding:10px; background:rgba(0,0,0,0.5); border:1px solid rgba(239,68,68,0.3); color:#fff; border-radius:var(--radius-sm);" value="bvk-7f3a" readonly>
+            </div>
+
+            <div style="margin-bottom:18px;">
+              <label style="font-size:11px; text-transform:uppercase; color:var(--text-dim); display:block; margin-bottom:6px;">Containment Justification / Reason</label>
+              <input type="text" id="revocation-reason-input" style="width:100%; padding:10px; background:rgba(0,0,0,0.5); border:1px solid rgba(239,68,68,0.3); color:#fff; border-radius:var(--radius-sm); font-size:13px;" value="Active unauthorized data extraction and restricted bulk export attempts detected in Incident CR-26-047">
+            </div>
+
+            <button id="btn-pane-revoke" class="btn btn-danger" style="width:100%; font-size:14px; font-weight:800; padding:12px;">
+              <span>&times; ENFORCE IMMEDIATE CREDENTIAL REVOCATION</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- PANE 6: Cryptographic Forensics -->
+        <div id="pane-audit" class="tab-pane">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Cryptographic Tamper-Evident SHA-256 Hash Chain</span>
+              <button id="btn-run-audit-check" class="btn btn-outline btn-sm">Verify Hash Chain</button>
+            </div>
+            <div id="audit-verification-output"></div>
+          </div>
+        </div>
+
+        <!-- PANE 7: Forensic Reports Export -->
+        <div id="pane-reports" class="tab-pane">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Case File Export & Digital Forensics Documentation</span>
+              <span class="badge badge-low">OFFICIAL EXPORTS</span>
+            </div>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px; line-height:1.6;">
+              Export official documentation for Case <b>CR-26-047</b> (Harbor & Finch Freight Pvt. Ltd.). 
+              Generated directly from database-backed security events and cryptographic audit proofs.
+            </p>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+              <div style="background:rgba(0,0,0,0.3); padding:18px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="font-weight:700; color:#fff; font-size:14px; margin-bottom:6px;">Official Forensic PDF Report</div>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">
+                  Comprehensive PDF generated via ReportLab containing case summary, timeline, correlation findings, 
+                  threat alerts, containment proofs, and evidence limitations.
+                </p>
+                <button id="btn-download-pdf" class="btn btn-primary" style="width:100%;">
+                  <span>DOWNLOAD FORENSIC PDF</span>
+                </button>
+              </div>
+
+              <div style="background:rgba(0,0,0,0.3); padding:18px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="font-weight:700; color:#fff; font-size:14px; margin-bottom:6px;">Structured Forensic JSON Export</div>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">
+                  Machine-readable JSON data package containing raw hash-chained event objects, alert parameters, and audit verification hashes.
+                </p>
+                <button id="btn-download-json" class="btn btn-outline" style="width:100%;">
+                  <span>DOWNLOAD FORENSIC JSON</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE 8: Evidence Limitations -->
+        <div id="pane-limitations" class="tab-pane">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Forensic Boundaries & Evidence Limitations</span>
+              <span class="badge badge-medium">METHODOLOGY</span>
+            </div>
+            <div style="font-size:13px; color:var(--text-muted); line-height:1.7;">
+              <p style="margin-bottom:12px;">
+                <b>1. Credential Indexing Boundary:</b> Credential identifier <code class="mono" style="color:var(--accent-cyan);">bvk-7f3a</code> is a database index handle and does not constitute the underlying secret. The raw secret is stored only as a SHA-256 hash. Production BlueVault root keys were never recovered or exposed.
+              </p>
+              <p style="margin-bottom:12px;">
+                <b>2. Network Telemetry Limitations:</b> IP addresses and network endpoints represent packet routing paths, not legal human individuals. Technical correlation demonstrates device and credential association, but cannot establish human attribution without external legal corroboration.
+              </p>
+              <p style="margin-bottom:12px;">
+                <b>3. Cryptographic Chain Guarantees:</b> SHA-256 hash chaining proves sequence integrity against internal deletion, insertion, or reordering. However, hash chaining cannot by itself prevent privileged database administrator storage overwrite without write-once (WORM) cloud storage controls.
+              </p>
+              <p>
+                <b>4. Synthetic Demonstration Context:</b> All corporate freight manifest entries, customer identities, and integration credentials in Case CR-26-047 are synthetic demonstration artifacts constructed for the Crimeathon'26 simulation.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/investigator.js"></script>
+</body>
+</html>

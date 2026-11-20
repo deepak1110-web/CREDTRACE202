@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CREDTRACE V2 - Cybercrime Incident Simulation Platform</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <a href="/" class="brand">
+      <span class="brand-badge">CR-26-047</span>
+      <span class="brand-title">CREDTRACE-LIVE</span>
+      <span class="brand-case">HARBOR & FINCH FREIGHT</span>
+    </a>
+
+    <div class="room-bar">
+      <span class="room-label">ROOM:</span>
+      <input type="text" class="room-input" placeholder="Room ID..." value="CR-26-047-DEMO">
+      <div class="ws-status-pill ws-connected">
+        <span class="pulse-dot"></span> <span>CONNECTING...</span>
+      </div>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/portal" class="nav-item">COMPANY PORTAL</a>
+      <a href="/simulator" class="nav-item attacker-link">ATTACKER SIMULATOR</a>
+      <a href="/investigator" class="nav-item">INVESTIGATOR SOC</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Hero / Case Context Banner -->
+    <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--accent-cyan); background: linear-gradient(135deg, rgba(13, 21, 39, 0.95), rgba(7, 10, 18, 0.9));">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+            <span class="badge badge-critical">LIVE INCIDENT SIMULATION</span>
+            <span class="mono" style="color:var(--accent-cyan); font-size:12px;">CASE ID: CR-26-047</span>
+            <span class="mono" style="color:var(--text-dim); font-size:12px;">CRIMEATHON'26 MASTER BUILD</span>
+          </div>
+          <h1 style="font-size:26px; margin-bottom:8px;">Harbor & Finch Freight: Unauthorized Credential Exfiltration & Forensics</h1>
+          <p style="color:var(--text-muted); font-size:13px; max-width:860px; line-height:1.6;">
+            A high-fidelity two-device interactive cyber incident platform. Demonstrates synthetic credential exposure 
+            (<code class="mono" style="color:var(--accent-cyan);">bvk-7f3a</code>), remote adversary reconnaissance, real-time SOC threat detection, 
+            tamper-evident SHA-256 hash chaining, and instantaneous server-enforced containment.
+          </p>
+        </div>
+        <div style="text-align:right;">
+          <button class="btn btn-primary" onclick="CREDTRACE.copyShareLink('simulator')">
+            <span>COPY LAPTOP 2 LINK</span>
+          </button>
+          <div style="font-size:11px; color:var(--text-dim); margin-top:6px;">
+            Room: <b class="mono current-room-id" style="color:var(--accent-cyan);">CR-26-047-DEMO</b>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Two-Laptop Judge Quick Setup Guide -->
+    <div class="card" style="margin-bottom: 28px; background: rgba(15, 23, 42, 0.65); border: 1px dashed var(--border-subtle);">
+      <div class="card-header" style="margin-bottom: 12px; padding-bottom: 8px;">
+        <span class="card-title" style="color:var(--accent-cyan);">
+          TWO-DEVICE INTERNET DEMONSTRATION WORKFLOW
+        </span>
+        <span class="badge badge-low">READY FOR JUDGES</span>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:16px; font-size:12px; color:var(--text-muted);">
+        <div style="background:rgba(0,0,0,0.3); padding:14px; border-radius:var(--radius-sm); border:1px solid rgba(255,255,255,0.04);">
+          <div style="font-weight:700; color:#fff; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+            <span style="color:var(--accent-cyan);">LAPTOP 1:</span> Investigator SOC Command Centre
+          </div>
+          <p style="margin-bottom:8px;">Open Investigator SOC to monitor incoming alerts, live event stream, and risk score.</p>
+          <a href="/investigator" class="btn btn-outline btn-sm" style="color:var(--accent-cyan);">Launch Investigator SOC &rarr;</a>
+        </div>
+        <div style="background:rgba(20,10,15,0.5); padding:14px; border-radius:var(--radius-sm); border:1px solid rgba(239,68,68,0.2);">
+          <div style="font-weight:700; color:#fca5a5; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+            <span style="color:var(--accent-red);">LAPTOP 2:</span> Portal & Adversary Simulator
+          </div>
+          <p style="margin-bottom:8px;">Log in as Sarah Chen, copy synthetic secret from ticket, and trigger simulated attack operations.</p>
+          <div style="display:flex; gap:8px;">
+            <a href="/portal" class="btn btn-outline btn-sm">Company Portal &rarr;</a>
+            <a href="/simulator" class="btn btn-danger btn-sm">Adversary Simulator &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Four Core Modules -->
+    <h2 style="font-size:16px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); margin-bottom:16px;">
+      Integrated System Modules
+    </h2>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap:20px;">
+      
+      <!-- Module 1: Company Portal -->
+      <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span class="badge badge-medium">MODULE A.1</span>
+            <span style="font-size:11px; color:var(--text-dim);">FICTIONAL ENVIRONMENT</span>
+          </div>
+          <h3 style="font-size:18px; margin-bottom:8px;">Harbor & Finch Company Portal</h3>
+          <p style="font-size:13px; color:var(--text-muted); line-height:1.5; margin-bottom:16px;">
+            Corporate intranet with employee authentication, logistics telemetry, and vendor support tickets. 
+            Demonstrates where synthetic API test secret was generated under Ticket <b style="color:#fff;">TKT-48213</b>.
+          </p>
+        </div>
+        <div>
+          <div style="font-size:11px; color:var(--text-dim); margin-bottom:12px;" class="mono">
+            Identity: Sarah Chen (Logistics Lead) | Key: bvk-7f3a
+          </div>
+          <a href="/portal" class="btn btn-outline" style="width:100%;">Access Company Portal</a>
+        </div>
+      </div>
+
+      <!-- Module 2: Attacker Simulator -->
+      <div class="card card-attacker" style="display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span class="badge badge-critical">MODULE A.2</span>
+            <span style="font-size:11px; color:var(--accent-red);">CONTROLLED ADVERSARY</span>
+          </div>
+          <h3 style="font-size:18px; margin-bottom:8px; color:#fca5a5;">Controlled Attacker Simulator</h3>
+          <p style="font-size:13px; color:var(--text-muted); line-height:1.5; margin-bottom:16px;">
+            Dark cinematic adversarial operations terminal. Executes pre-scripted synthetic attacks: authentication probes, 
+            customer manifest queries, vendor enumeration, and unauthorized bulk export attempts.
+          </p>
+        </div>
+        <div>
+          <div style="font-size:11px; color:var(--text-dim); margin-bottom:12px;" class="mono">
+            Device: Consent-based demo label | Real backend calls
+          </div>
+          <a href="/simulator" class="btn btn-danger" style="width:100%;">Launch Attacker Terminal</a>
+        </div>
+      </div>
+
+      <!-- Module 3: Investigator SOC -->
+      <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; border-color:rgba(6,182,212,0.3);">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span class="badge badge-low">MODULE B.1</span>
+            <span style="font-size:11px; color:var(--accent-cyan);">REAL-TIME SOC</span>
+          </div>
+          <h3 style="font-size:18px; margin-bottom:8px; color:#38bdf8;">Investigator Command Centre</h3>
+          <p style="font-size:13px; color:var(--text-muted); line-height:1.5; margin-bottom:16px;">
+            Enterprise SOC interface with live telemetry feed, real risk gauge (0-100), Chart.js visual analytics, 
+            multi-source correlation engine, and instant one-click credential containment.
+          </p>
+        </div>
+        <div>
+          <div style="font-size:11px; color:var(--text-dim); margin-bottom:12px;" class="mono">
+            WebSocket sync + polling fallback | Server-enforced revocation
+          </div>
+          <a href="/investigator" class="btn btn-primary" style="width:100%;">Open SOC Dashboard</a>
+        </div>
+      </div>
+
+      <!-- Module 4: Detection & Forensics -->
+      <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span class="badge badge-high">MODULE B.2</span>
+            <span style="font-size:11px; color:var(--accent-purple);">FORENSICS LEDGER</span>
+          </div>
+          <h3 style="font-size:18px; margin-bottom:8px;">Cryptographic Forensics & Reports</h3>
+          <p style="font-size:13px; color:var(--text-muted); line-height:1.5; margin-bottom:16px;">
+            Tamper-evident SHA-256 hash chaining across all recorded security events. Verified from Genesis block. 
+            Downloadable official ReportLab PDF and structured JSON reports.
+          </p>
+        </div>
+        <div>
+          <div style="font-size:11px; color:var(--text-dim); margin-bottom:12px;" class="mono">
+            SHA-256 Hash Chaining | ReportLab PDF Export
+          </div>
+          <a href="/investigator#pane-audit" class="btn btn-outline" style="width:100%;">View Cryptographic Audit</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Evidence Limitations Footer Banner -->
+    <div style="margin-top:40px; padding:18px 24px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.05); border-radius:var(--radius-sm); font-size:11px; color:var(--text-dim); line-height:1.6;">
+      <b style="color:var(--text-main);">FORENSIC INTEGRITY & EVIDENCE LIMITATIONS:</b>
+      All tokens and secrets are synthetically generated for demonstration. Primary identifier <code class="mono" style="color:var(--accent-cyan);">bvk-7f3a</code> is a synthetic index handle. Network IP addresses identify routing origins, not physical human identity. SHA-256 hash chaining proves sequence integrity, subject to underlying host storage administration.
+    </div>
+  </main>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

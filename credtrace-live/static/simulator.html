@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CREDTRACE - Attacker Operations Terminal</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body style="background-color: #060910;">
+
+  <!-- Top Navigation Bar -->
+  <header class="top-nav" style="border-bottom-color: rgba(239, 68, 68, 0.3);">
+    <a href="/" class="brand">
+      <span class="brand-badge" style="background:linear-gradient(135deg, #ef4444, #dc2626); color:#fff;">MODULE A.2</span>
+      <span class="brand-title" style="color:#fca5a5;">ADVERSARY SIMULATOR</span>
+      <span class="brand-case" style="border-color:rgba(239, 68, 68, 0.4); color:#f87171;">CONTROLLED SIMULATION</span>
+    </a>
+
+    <div class="room-bar" style="border-color: rgba(239,68,68,0.3);">
+      <span class="room-label" style="color:#f87171;">ROOM:</span>
+      <input type="text" class="room-input" style="color:#fca5a5;" placeholder="Room ID..." value="CR-26-047-DEMO">
+      <div class="ws-status-pill ws-connected">
+        <span class="pulse-dot"></span> <span>SYNCED</span>
+      </div>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/" class="nav-item">HUB</a>
+      <a href="/portal" class="nav-item">COMPANY PORTAL</a>
+      <a href="/simulator" class="nav-item attacker-link active">ATTACKER SIMULATOR</a>
+      <a href="/investigator" class="nav-item">INVESTIGATOR SOC</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    
+    <!-- Containment Flashing Alert Banner -->
+    <div id="containment-banner" class="card" style="display:none; background:rgba(30,10,15,0.95); border:2px solid var(--accent-red); margin-bottom:20px; animation: pulse 2s infinite;">
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:24px;">🚨</span>
+          <div>
+            <h3 style="color:#f87171; font-size:16px;">CONTAINMENT ACTIVATED BY INVESTIGATOR</h3>
+            <p style="font-size:12px; color:#fca5a5;">
+              Credential <b>bvk-7f3a</b> has been REVOKED by the SOC command centre on Laptop 1. 
+              The backend access control layer is now permanently rejecting all operations from this simulator session.
+            </p>
+          </div>
+        </div>
+        <span class="badge badge-critical" style="font-size:12px; padding:6px 12px;">STATUS: 403 REVOKED</span>
+      </div>
+    </div>
+
+    <!-- Header & Phase Indicator -->
+    <div class="card card-attacker" style="margin-bottom: 24px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px; margin-bottom:16px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <span class="badge badge-critical">ADVERSARY CONSOLE</span>
+            <span class="mono" style="font-size:12px; color:var(--text-dim);">DEMO DEVICE: <span id="active-device-display" style="color:#fca5a5;">LAPTOP-02-SIMULATOR</span></span>
+          </div>
+          <h1 style="font-size:22px; color:#fff;">BlueVault Credential Exploitation & Exfiltration Simulation</h1>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px; color:var(--text-dim); margin-bottom:4px;">Session Status</div>
+          <div id="sim-status" class="mono" style="font-weight:700; color:var(--accent-red); font-size:14px;">STANDBY</div>
+        </div>
+      </div>
+
+      <!-- Attack Progression Bar -->
+      <div>
+        <div style="display:flex; justify-content:space-between; font-size:11px; text-transform:uppercase; color:var(--text-dim); margin-bottom:6px;">
+          <span>Current Adversary Phase: <b id="attack-phase-name" style="color:#fff;">STANDBY / RECONNAISSANCE</b></span>
+          <span class="mono">PHASE PROGRESSION</span>
+        </div>
+        <div style="width:100%; height:6px; background:rgba(255,255,255,0.05); border-radius:999px; overflow:hidden;">
+          <div id="attack-phase-progress" style="width:10%; height:100%; background:linear-gradient(90deg, #dc2626, #ef4444); transition:width 0.4s ease;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid: Controls vs Terminal -->
+    <div style="display:grid; grid-template-columns: 380px 1fr; gap:20px;">
+      
+      <!-- Left Column: Adversary Operation Controls -->
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        
+        <!-- Registration & Secret Input -->
+        <div class="card card-attacker">
+          <div class="card-header" style="border-bottom-color: rgba(239,68,68,0.2);">
+            <span class="card-title" style="color:#fca5a5;">1. Setup & Synthetic Secret</span>
+            <span class="badge badge-critical">INPUT</span>
+          </div>
+          
+          <div style="margin-bottom:12px;">
+            <label style="font-size:11px; text-transform:uppercase; color:var(--text-dim); display:block; margin-bottom:6px;">Consent Device Label</label>
+            <input type="text" id="device-label-input" class="mono" style="width:100%; padding:8px 10px; background:rgba(0,0,0,0.5); border:1px solid rgba(239,68,68,0.3); color:#fff; border-radius:var(--radius-sm); font-size:12px;" value="DEMO-LAPTOP-02-ADVERSARY">
+          </div>
+
+          <div style="margin-bottom:14px;">
+            <label style="font-size:11px; text-transform:uppercase; color:var(--text-dim); display:block; margin-bottom:6px;">Synthetic Test Secret</label>
+            <input type="text" id="simulator-secret-input" class="mono" placeholder="Paste sec_live_... from portal" style="width:100%; padding:8px 10px; background:rgba(0,0,0,0.5); border:1px solid rgba(239,68,68,0.3); color:var(--accent-green); border-radius:var(--radius-sm); font-size:12px;" value="sec_live_9b4e72c81a6f0012e8b2841d9c025d31">
+          </div>
+
+          <button id="btn-sim-auth" class="btn btn-danger" style="width:100%;">
+            <span>Authenticate Device & Start Session</span>
+          </button>
+        </div>
+
+        <!-- Manual Operation Selector -->
+        <div class="card card-attacker">
+          <div class="card-header" style="border-bottom-color: rgba(239,68,68,0.2);">
+            <span class="card-title" style="color:#fca5a5;">2. Simulated Attacks</span>
+            <span class="badge badge-critical">REAL CALLS</span>
+          </div>
+          
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <button id="btn-sim-vendors" class="btn btn-outline" style="border-color:rgba(239,68,68,0.3); justify-content:space-between;">
+              <span>Enumerate Vendor APIs</span>
+              <span class="badge badge-low">DISCOVERY</span>
+            </button>
+
+            <button id="btn-sim-customers" class="btn btn-outline" style="border-color:rgba(239,68,68,0.3); justify-content:space-between;">
+              <span>Query Customer Manifests</span>
+              <span class="badge badge-medium">READ DATA</span>
+            </button>
+
+            <button id="btn-sim-export" class="btn btn-danger" style="justify-content:space-between; background:linear-gradient(135deg, #991b1b, #dc2626);">
+              <span>Attempt Bulk Data Export</span>
+              <span class="badge badge-critical">TRIGGERS 403</span>
+            </button>
+
+            <button id="btn-sim-invalid" class="btn btn-outline" style="border-color:rgba(245,158,11,0.3); justify-content:space-between; color:#fbbf24;">
+              <span>Probe Invalid Credential</span>
+              <span class="badge badge-high">TRIGGERS 401</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Automated Sequence Runner -->
+        <div class="card card-attacker" style="background:rgba(30,10,20,0.9);">
+          <div class="card-header" style="border-bottom-color: rgba(239,68,68,0.2);">
+            <span class="card-title" style="color:#fca5a5;">3. Auto-Play Script</span>
+            <span class="badge badge-critical">1-CLICK</span>
+          </div>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+            Runs the full realistic attack lifecycle automatically for competition presentation.
+          </p>
+          <button id="btn-run-script" class="btn btn-danger" style="width:100%; font-weight:800;">
+            <span>&blacktriangleright; EXECUTE FULL ATTACK SEQUENCE</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Animated Monospace Terminal Output -->
+      <div style="display:flex; flex-direction:column;">
+        <div class="terminal-window">
+          <div class="terminal-header">
+            <div class="terminal-controls">
+              <span class="terminal-dot" style="background:#ef4444;"></span>
+              <span class="terminal-dot" style="background:#f59e0b;"></span>
+              <span class="terminal-dot" style="background:#10b981;"></span>
+            </div>
+            <div class="terminal-title">CREDTRACE ADV-SIM // TELEMETRY STDOUT</div>
+            <div>
+              <button id="btn-clear-terminal" class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:10px;">Clear</button>
+            </div>
+          </div>
+          <div id="terminal-output" class="terminal-body">
+            <div class="log-entry">
+              <span class="log-ts">[INITIALIZED]</span>
+              <span style="color:var(--text-dim);">Ready. Room: <b class="current-room-id" style="color:var(--accent-cyan);">CR-26-047-DEMO</b>. Actions call real backend endpoints and record cryptographic events.</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim);" class="mono">
+          <span>Active Session: <b id="sim-session-id" style="color:var(--accent-cyan);">None</b></span>
+          <span>Target Credential: <b style="color:var(--accent-red);">bvk-7f3a</b></span>
+          <span>Audit Status: <b style="color:var(--accent-green);">SHA-256 HASH CHAINING</b></span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/simulator.js"></script>
+</body>
+</html>
